@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    env_file: .env
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - recuc-net
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+    depends_on:
+      - db
+    networks:
+      - recuc-net
+
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+    networks:
+      - recuc-net
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - recuc-net
+
+  reverse-proxy:
+    build: ./proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./proxy/proxy_params:/etc/nginx/proxy_params
+      - ./proxy/certs:/etc/nginx/certs
+    depends_on:
+      - frontend
+      - backend
+      - phpmyadmin
+    command: sh -c "/etc/nginx/certs/generate_cert.sh && nginx -g 'daemon off;'"
+    networks:
+      - recuc-net
+
+volumes:
+  db_data:
+
+networks:
+  recuc-net:
+    driver: bridge
