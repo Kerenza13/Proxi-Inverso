@@ -1,58 +1,71 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  db:
-    image: mysql:8.0
-    env_file: .env
-    volumes:
-      - db_data:/var/lib/mysql
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: DockerfileFrontendRECUC
+    container_name: frontendRECUC
+    ports:
+      - '5173:5173'
     networks:
-      - recuc-net
-
-  phpmyadmin:
-    image: phpmyadmin
-    restart: always
-    environment:
-      PMA_HOST: db
-    depends_on:
-      - db
-    networks:
-      - recuc-net
+      - redwebRECUC
 
   backend:
-    build: ./backend
-    depends_on:
-      - db
-    networks:
-      - recuc-net
-
-  frontend:
-    build: ./frontend
+    build:
+      context: ./backend
+      dockerfile: DockerfileBackendRECUC
+    container_name: backendRECUC
     ports:
-      - "3000:3000"
+      - '8000:8000'
+    env_file:
+      - .env
     networks:
-      - recuc-net
+      - redwebRECUC
 
-  reverse-proxy:
-    build: ./proxy
+  database:
+    image: mysql:8.0
+    container_name: databaseRECUC
+    restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
-      - ./proxy/proxy_params:/etc/nginx/proxy_params
-      - ./proxy/certs:/etc/nginx/certs
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - redwebRECUC
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadminRECUC
+    environment:
+      PMA_HOST: database
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - redwebRECUC
+
+  web:
+    build:
+      context: ./web
+      dockerfile: DockerfileWebRECUC
+    container_name: webRECUC
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./web/certs:/etc/nginx/certs
     depends_on:
       - frontend
       - backend
       - phpmyadmin
-    command: sh -c "/etc/nginx/certs/generate_cert.sh && nginx -g 'daemon off;'"
     networks:
-      - recuc-net
-
-volumes:
-  db_data:
+      - redwebRECUC
 
 networks:
-  recuc-net:
+  redwebRECUC:
     driver: bridge
