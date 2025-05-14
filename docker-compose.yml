@@ -55,16 +55,17 @@ services:
       dockerfile: DockerfileWebRECUC
     container_name: webRECUC
     ports:
-      - '80:80'
-      - '443:443'
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./web/certs:/etc/nginx/certs
+      - ./web/certs:/etc/nginx/certs  
     depends_on:
       - frontend
       - backend
       - phpmyadmin
     networks:
       - redwebRECUC
+
 
 networks:
   redwebRECUC:
