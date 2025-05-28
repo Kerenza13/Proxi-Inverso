@@ -1,17 +1,17 @@
-# DespliegueCompletoJFPP con proxy inverso
+# DespliegueCompletoRECUC con proxy inverso
 ## Cómo crear el .env y con qué contenido para que todo funcione correctamente
 Se crea el archivo .env en la raíz del proyecto. Contiene:
 
 - MYSQL_ROOT_PASSWORD=root
-- MYSQL_DATABASE=JFPP_BD
+- MYSQL_DATABASE=RECUC_BD
 - MYSQL_USER=alumnoDAW
-- MYSQL_PASSWORD=passJFPP
+- MYSQL_PASSWORD=passRECUC
 - PMA_HOST=database
 
 Luego cambiamos environment por env_file y usamos esos nombres como valores en el docker-compose.
 Ejecutamos docker compose --env-file .env up
 ## Pasos
-Reutilizando archivos de DespliegueCompletoJFPP:
+Reutilizando archivos de DespliegueCompletoRECUC:
 1. En la carpeta web cambiar default.conf. Definimos cada servicio del servidor
 2. En la carpeta web crear el archivo entrypoint.sh
 3. En el archivo entrypoint.sh cambiamos /C=US/ST=Estado/L=Ciudad... a nuestros datos
