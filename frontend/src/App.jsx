@@ -5,7 +5,7 @@ function App() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('/api/jfpp')
+    fetch('/api/RECUC')
       .then((res) => res.json())
       .then((data) => setMessage(data.message));
   }, []);
