@@ -1,0 +1,3 @@
+# Ignora todo lo que contiene el directorio certs menos el archivo .gitignore
+*
+!.gitignore

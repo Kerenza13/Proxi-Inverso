@@ -1,31 +1,23 @@
-# RECUC - Proyecto Full-Stack con React, Symfony, MySQL y Proxy con SSL
+# DespliegueCompletoJFPP con proxy inverso
+## Cómo crear el .env y con qué contenido para que todo funcione correctamente
+Se crea el archivo .env en la raíz del proyecto. Contiene:
 
-## 🔧 Requisitos
+- MYSQL_ROOT_PASSWORD=root
+- MYSQL_DATABASE=JFPP_BD
+- MYSQL_USER=alumnoDAW
+- MYSQL_PASSWORD=passJFPP
+- PMA_HOST=database
 
-- Docker + Docker Compose
-
-## 📁 Estructura
-
-- `/frontend` → Aplicación React
-- `/backend` → API Symfony
-- `/proxy` → Nginx con SSL y redirecciones
-- `/phpmyadmin` → Interfaz para MySQL
-- `.env` → Variables de entorno (no se sube al repositorio)
-
-## ✅ Configuración del archivo `.env`
-
-Crea un archivo `.env` con este contenido:
-
-MYSQL_ROOT_PASSWORD=rootpass
-MYSQL_DATABASE=recucdb
-MYSQL_USER=admin
-MYSQL_PASSWORD=adminpass
-
-
-## 🚀 Arrancar el proyecto
-
-docker-compose up --build
-
-
-
-⚠️ Si usas AWS, modifica el server_name en nginx.conf con la IP pública del servidor EC2.
+Luego cambiamos environment por env_file y usamos esos nombres como valores en el docker-compose.
+Ejecutamos docker compose --env-file .env up
+## Pasos
+Reutilizando archivos de DespliegueCompletoJFPP:
+1. En la carpeta web cambiar default.conf. Definimos cada servicio del servidor
+2. En la carpeta web crear el archivo entrypoint.sh
+3. En el archivo entrypoint.sh cambiamos /C=US/ST=Estado/L=Ciudad... a nuestros datos
+4. Modifo el DockerfileWeb añadiendo lo que corresponda
+5. Modifico de nuevo el default.conf añadiendo el server con listen 443 ssl, etc
+6. Modifico el docker-compose añadiendo el 443:443 como puerto al servicio web, etc
+7. En la carpeta web creamos la carpeta certs y dentro un .gitignore
+## Autor
+Carlos Morillas Delgado
